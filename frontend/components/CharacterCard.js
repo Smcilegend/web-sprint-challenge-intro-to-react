@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Character = ({ character }) => {
+const CharacterCard = ({ character }) => {
   const [isPlanetVisible, setPlanetVisible] = useState(false);
 
   const togglePlanetVisibility = () => {
@@ -20,4 +20,4 @@ const Character = ({ character }) => {
   );
 };
 
-export default Character;
+export default CharacterCard;

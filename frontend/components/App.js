@@ -30,7 +30,7 @@ const App = () => {
           ...character,
           homeworld: {
             id: character.homeworld,
-            name: planetDataMap[character.homeworld] || 'Unknown',
+            name: planetDataMap[character.homeworld]
           }
         }));
 
@@ -65,4 +65,4 @@ const App = () => {
   );
 };
 
-export default App;
+if (typeof module !== 'undefined' && module.exports) module.exports = App
