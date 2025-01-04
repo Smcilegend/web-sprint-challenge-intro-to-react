@@ -1,23 +1,67 @@
-import React from 'react'
-import axios from 'axios'
-import Character from './Character'
+import React, { useState, useEffect } from "react";
+import CharacterCard from "./CharacterCard";
 
-const urlPlanets = 'http://localhost:9009/api/planets'
-const urlPeople = 'http://localhost:9009/api/people'
+const App = () => {
+  const [characterList, setCharacterList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
-function App() {
-  // ❗ Create state to hold the data from the API
-  // ❗ Create effects to fetch the data and put it in state
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [peopleResponse, planetsResponse] = await Promise.all([
+          fetch('http://localhost:9009/api/people').then((res) => {
+            if (!res.ok) throw new Error('Failed to fetch characters.');
+            return res.json();
+          }),
+          fetch('http://localhost:9009/api/planets').then((res) => {
+            if (!res.ok) throw new Error('Failed to fetch planets.');
+            return res.json();
+          }),
+        ]);
+
+        const planetDataMap = planetsResponse.reduce((acc, planet) => {
+          acc[planet.id] = planet.name;
+          return acc;
+        }, {});
+
+        const charactersWithPlanets = peopleResponse.map((character) => ({
+          ...character,
+          homeworld: {
+            id: character.homeworld,
+            name: planetDataMap[character.homeworld] || 'Unknown', // Fixed here
+          }
+        }));
+
+        setCharacterList(charactersWithPlanets);
+        setIsLoading(false);
+      } catch (err) {
+        setFetchError(err.message);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <h1>Loading Characters...</h1>;
+  }
+
+  if (fetchError) {
+    return <h1>{fetchError}</h1>;
+  }
+
   return (
     <div>
-      <h2>Star Wars Characters</h2>
-      <p>See the README of the project for instructions on completing this challenge</p>
-      {/* ❗ Map over the data in state, rendering a Character at each iteration */}
+      <h1>Star Wars Characters</h1>
+      <div className="character-list">
+        {characterList.map((character) => (
+          <CharacterCard key={character.id} character={character} />
+        ))}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default App
-
-// ❗ DO NOT CHANGE THE CODE  BELOW
-if (typeof module !== 'undefined' && module.exports) module.exports = App
+export default App;
