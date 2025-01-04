@@ -20,6 +20,7 @@ const App = () => {
           }),
         ]);
 
+
         const planetDataMap = planetsResponse.reduce((acc, planet) => {
           acc[planet.id] = planet.name;
           return acc;
@@ -29,7 +30,7 @@ const App = () => {
           ...character,
           homeworld: {
             id: character.homeworld,
-            name: planetDataMap[character.homeworld] || 'Unknown', // Fixed here
+            name: planetDataMap[character.homeworld] || 'Unknown',
           }
         }));
 
